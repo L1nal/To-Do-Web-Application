@@ -14,24 +14,24 @@ const TaskForm = ({ onAdd }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-xs">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
       <h2 className="text-blue-600 font-bold text-3xl mb-4">Add a Task</h2>
       <input
         type="text"
         placeholder="Title"
-        className="p-2 border border-gray-300 rounded focus:outline-none"
+        className="w-full p-2 border border-gray-300 rounded focus:outline-none"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
       <textarea
         placeholder="Description"
-        className="p-2 border border-gray-300 rounded focus:outline-none resize-none h-28"
+        className="w-full p-2 border border-gray-300 rounded focus:outline-none resize-none h-28"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
       <button
         type="submit"
-        className="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition-colors font-semibold shadow"
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition-colors font-semibold shadow"
       >
         Add
       </button>
@@ -136,14 +136,14 @@ const Home = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen min-w-screen w-screen h-screen flex items-center justify-center overflow-auto">
-      <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full flex p-8 my-12 mx-4 h-[600px] items-center">
+      <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full flex flex-col md:flex-row p-4 md:p-8 my-4 md:my-12 mx-2 md:mx-4 h-auto md:h-[600px] items-center">
         {/* Left: Add Task */}
-        <div className="flex-1 flex flex-col justify-center items-center pr-8 border-r border-gray-200 h-full">
+        <div className="w-full md:w-1/2 flex flex-col justify-center items-center md:pr-8 border-b md:border-b-0 md:border-r border-gray-200 h-auto md:h-full mb-4 md:mb-0">
           <TaskForm onAdd={handleAddTask} />
         </div>
         {/* Right: Task List */}
-        <div className="flex-1 flex flex-col justify-center items-center pl-8 h-full">
-          <div className="w-full h-full overflow-y-auto">
+        <div className="w-full md:w-1/2 flex flex-col justify-center items-center md:pl-8 h-auto md:h-full">
+          <div className="w-full h-[300px] md:h-full overflow-y-auto">
             <TaskList
               tasks={tasks}
               onComplete={handleCompleteTask}
