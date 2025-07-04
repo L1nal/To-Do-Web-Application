@@ -42,32 +42,32 @@ const TaskForm = ({ onAdd }) => {
 
 // TaskItem: Renders a single task
 const TaskItem = ({ task, onComplete, onEdit, onDelete, onRestore, onPermanentDelete, currentTab }) => (
-  <div className="bg-gray-200 rounded shadow flex flex-col md:flex-row justify-between md:items-center p-4 mb-4 w-full">
+  <div className="bg-gray-200 rounded shadow flex flex-row justify-between items-center p-4 mb-4 w-full">
     <div className="flex-1 min-w-0">
       <div className="font-semibold text-black text-base mb-1">{task.title}</div>
       <div className="text-sm text-gray-700 break-words w-full max-w-full">{task.description}</div>
       <div className="text-xs text-gray-500 mt-1">
-        Created: {new Date(task.created_at).toLocaleDateString()}
+        Created: {new Date(task.created_at).toLocaleDateString()} {new Date(task.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
       </div>
     </div>
-    <div className="flex gap-2 mt-4 md:mt-0 md:ml-4 w-full md:w-auto">
+    <div className="flex flex-col gap-2 ml-4 w-auto items-end">
       {currentTab === 'active' && (
         <>
           <button
-            className={`bg-green-500 hover:bg-green-600 text-white px-2 py-1 text-sm rounded font-medium transition-colors shadow ${task.status === 'completed' ? 'opacity-60 cursor-not-allowed' : ''}`}
+            className={`bg-green-500 hover:bg-green-600 text-white px-2 py-1 text-xs rounded font-medium transition-colors shadow w-20`}
             onClick={() => onComplete(task.id)}
             disabled={task.status === 'completed'}
           >
             Complete
           </button>
           <button
-            className="bg-yellow-400 hover:bg-yellow-500 text-white px-2 py-1 text-sm rounded font-medium transition-colors shadow"
+            className="bg-yellow-400 hover:bg-yellow-500 text-white px-2 py-1 text-xs rounded font-medium transition-colors shadow w-20"
             onClick={() => onEdit(task.id)}
           >
             Edit
           </button>
           <button
-            className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 text-sm rounded font-medium transition-colors shadow"
+            className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 text-xs rounded font-medium transition-colors shadow w-20"
             onClick={() => onDelete(task.id)}
           >
             Delete
@@ -77,13 +77,13 @@ const TaskItem = ({ task, onComplete, onEdit, onDelete, onRestore, onPermanentDe
       {currentTab === 'completed' && (
         <>
           <button
-            className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 text-sm rounded font-medium transition-colors shadow"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 text-xs rounded font-medium transition-colors shadow w-20"
             onClick={() => onComplete(task.id, 'active')}
           >
             Reactivate
           </button>
           <button
-            className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 text-sm rounded font-medium transition-colors shadow"
+            className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 text-xs rounded font-medium transition-colors shadow w-20"
             onClick={() => onDelete(task.id)}
           >
             Delete
@@ -93,13 +93,13 @@ const TaskItem = ({ task, onComplete, onEdit, onDelete, onRestore, onPermanentDe
       {currentTab === 'deleted' && (
         <>
           <button
-            className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 text-sm rounded font-medium transition-colors shadow"
+            className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 text-xs rounded font-medium transition-colors shadow w-20"
             onClick={() => onRestore(task.id)}
           >
             Restore
           </button>
           <button
-            className="bg-red-700 hover:bg-red-800 text-white px-2 py-1 text-sm rounded font-medium transition-colors shadow"
+            className="bg-red-700 hover:bg-red-800 text-white px-2 py-1 text-xs rounded font-medium transition-colors shadow w-20"
             onClick={() => onPermanentDelete(task.id)}
           >
             Delete Forever
@@ -112,32 +112,45 @@ const TaskItem = ({ task, onComplete, onEdit, onDelete, onRestore, onPermanentDe
 
 // TaskList: Renders the list of tasks
 const TaskList = ({ tasks, currentTab, onComplete, onEdit, onDelete, onRestore, onPermanentDelete }) => {
+  const [showAll, setShowAll] = useState(false);
   const filteredTasks = tasks.filter(task => {
     if (currentTab === 'active') return task.status === 'active';
     if (currentTab === 'completed') return task.status === 'completed';
     if (currentTab === 'deleted') return task.status === 'deleted';
     return true;
   });
+  const visibleTasks = showAll ? filteredTasks : filteredTasks.slice(0, 5);
 
   return (
-    <div className="flex flex-col w-full max-w-md">
+    <div className="flex flex-col w-full">
       {filteredTasks.length === 0 ? (
         <div className="text-gray-500 text-center mt-8">
           No {currentTab} tasks yet.
         </div>
       ) : (
-        filteredTasks.map((task) => (
-          <TaskItem 
-            key={task.id} 
-            task={task} 
-            currentTab={currentTab}
-            onComplete={onComplete} 
-            onEdit={onEdit} 
-            onDelete={onDelete}
-            onRestore={onRestore}
-            onPermanentDelete={onPermanentDelete}
-          />
-        ))
+        <>
+          {visibleTasks.map((task) => (
+            <div className="w-full" key={task.id}>
+              <TaskItem 
+                task={task} 
+                currentTab={currentTab}
+                onComplete={onComplete} 
+                onEdit={onEdit} 
+                onDelete={onDelete}
+                onRestore={onRestore}
+                onPermanentDelete={onPermanentDelete}
+              />
+            </div>
+          ))}
+          {filteredTasks.length > 5 && !showAll && (
+            <button
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              onClick={() => setShowAll(true)}
+            >
+              Show More
+            </button>
+          )}
+        </>
       )}
     </div>
   );
@@ -248,7 +261,7 @@ const Home = () => {
               Deleted
             </button>
           </div>
-          <div className="w-full h-[300px] md:h-full overflow-y-auto">
+          <div className="w-full h-[300px] md:h-full overflow-y-auto flex flex-col">
             <TaskList
               tasks={tasks}
               currentTab={currentTab}
