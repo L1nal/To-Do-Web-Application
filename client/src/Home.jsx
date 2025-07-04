@@ -153,6 +153,10 @@ const Home = () => {
           </div>
         </div>
       </div>
+      {/* Footer */}
+      <footer className="w-full fixed bottom-0 left-0 text-center text-xs text-gray-400 bg-white bg-opacity-80 py-2 z-50">
+        This project was developed by Linal Mathila as part of the Full Stack Software Engineer interview process for CoverageX LLC.
+      </footer>
     </div>
   );
 };
