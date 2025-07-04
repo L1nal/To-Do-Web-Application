@@ -16,7 +16,7 @@ const TaskForm = ({ onAdd }) => {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
-      <h2 className="text-blue-600 font-bold text-3xl mb-4">Add a Task</h2>
+      <h2 className="text-blue-600 font-bold text-3xl mb-4 text-center">Add a Task</h2>
       <input
         type="text"
         placeholder="Title"
@@ -47,7 +47,10 @@ const TaskItem = ({ task, onComplete, onEdit, onDelete, onRestore, onPermanentDe
       <div className="font-semibold text-black text-base mb-1">{task.title}</div>
       <div className="text-sm text-gray-700 break-words w-full max-w-full">{task.description}</div>
       <div className="text-xs text-gray-500 mt-1">
-        Created: {new Date(task.created_at).toLocaleDateString()} {new Date(task.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        {currentTab === 'deleted'
+          ? `Deleted: ${task.deleted_at ? new Date(task.deleted_at).toLocaleDateString() + ' ' + new Date(task.deleted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}`
+          : `Created: ${new Date(task.created_at).toLocaleDateString()} ${new Date(task.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+        }
       </div>
     </div>
     <div className="flex flex-col gap-2 ml-4 w-auto items-end">
@@ -77,7 +80,7 @@ const TaskItem = ({ task, onComplete, onEdit, onDelete, onRestore, onPermanentDe
       {currentTab === 'completed' && (
         <>
           <button
-            className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 text-xs rounded font-medium transition-colors shadow w-20"
+            className="bg-green-500 hover:bg-blue-600 text-white px-2 py-1 text-xs rounded font-medium transition-colors shadow w-20"
             onClick={() => onComplete(task.id, 'active')}
           >
             Reactivate
@@ -99,10 +102,10 @@ const TaskItem = ({ task, onComplete, onEdit, onDelete, onRestore, onPermanentDe
             Restore
           </button>
           <button
-            className="bg-red-700 hover:bg-red-800 text-white px-2 py-1 text-xs rounded font-medium transition-colors shadow w-20"
+            className="bg-red-500 hover:bg-red-800 text-white px-2 py-1 text-xs rounded font-medium transition-colors shadow w-20"
             onClick={() => onPermanentDelete(task.id)}
           >
-            Delete Forever
+            Delete Permanently
           </button>
         </>
       )}
