@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 const TaskForm = ({ 
   onAdd, 
@@ -26,13 +26,6 @@ const TaskForm = ({
       onAdd({ title: title.trim(), description: description.trim() });
     }
   };
-
-  useEffect(() => {
-    if (editingTask) {
-      setTitle(editingTask.title);
-      setDescription(editingTask.description);
-    }
-  }, [editingTask, setTitle, setDescription]);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
