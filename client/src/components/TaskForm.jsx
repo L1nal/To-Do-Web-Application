@@ -31,19 +31,25 @@ const TaskForm = ({
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
       <h2 className="text-blue-600 font-bold text-3xl mb-4 text-center">Add a Task</h2>
       
-      {errors.length > 0 && (
+      {/* Error box for non-required errors */}
+      {errors.filter(error => !error.includes('Title is required') && !error.includes('Description is required')).length > 0 && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           <ul className="list-disc list-inside">
-            {errors.map((error, index) => (
+            {errors.filter(error => !error.includes('Title is required') && !error.includes('Description is required')).map((error, index) => (
               <li key={index} className="text-sm">{error}</li>
             ))}
           </ul>
         </div>
       )}
       
+      {/* Title input */}
       <input
         type="text"
-        placeholder="Title"
+        placeholder={
+          title === '' && errors.some(error => error.includes('Title is required'))
+            ? errors.find(error => error.includes('Title is required'))
+            : 'Title'
+        }
         className={`w-full p-2 border rounded focus:outline-none bg-gray-200 ${
           errors.some(error => error.includes('Title')) 
             ? 'border-red-500 focus:border-red-700' 
@@ -52,8 +58,18 @@ const TaskForm = ({
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
+      {/* Title error helper text */}
+      {errors.some(error => error.includes('Title is required')) && title === '' && (
+        <div className="text-red-500 text-xs mt-1 mb-2">{errors.find(error => error.includes('Title is required'))}</div>
+      )}
+      
+      {/* Description textarea */}
       <textarea
-        placeholder="Description"
+        placeholder={
+          description === '' && errors.some(error => error.includes('Description is required'))
+            ? errors.find(error => error.includes('Description is required'))
+            : 'Description'
+        }
         className={`w-full p-2 border rounded focus:outline-none bg-gray-200 resize-none h-28 ${
           errors.some(error => error.includes('Description')) 
             ? 'border-red-500 focus:border-red-700' 
@@ -62,6 +78,11 @@ const TaskForm = ({
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
+      {/* Description error helper text */}
+      {errors.some(error => error.includes('Description is required')) && description === '' && (
+        <div className="text-red-500 text-xs mt-1 mb-2">{errors.find(error => error.includes('Description is required'))}</div>
+      )}
+      
       <div className="flex gap-2">
         <button
           type="submit"

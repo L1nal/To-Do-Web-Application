@@ -37,7 +37,7 @@ const Home = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen min-w-screen w-screen h-screen flex items-center justify-center overflow-auto">
+    <div className="bg-gray-100 min-h-screen min-w-screen w-screen h-screen flex items-start md:items-center justify-center overflow-auto">
       {/* Notification Component */}
       <Notification 
         message={taskManager.success} 
