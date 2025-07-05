@@ -119,6 +119,21 @@ app.delete('/tasks/:id/permanent', (req, res) => {
   });
 });
 
+// Update task title and description
+app.put('/tasks/:id', (req, res) => {
+  const { id } = req.params;
+  const { title, description } = req.body;
+  const query = 'UPDATE tasks SET title = ?, description = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?';
+  connection.query(query, [title, description, id], (err, result) => {
+    if (err) {
+      console.error('Error updating task:', err);
+      res.status(500).json({ error: 'Failed to update task' });
+    } else {
+      res.json({ message: 'Task updated successfully' });
+    }
+  });
+});
+
 app.listen(5000, () => {
     console.log('Server is running on port 5000');
 });

@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-// TaskForm: Handles adding a new task
-const TaskForm = ({ onAdd }) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-
+// TaskForm: Handles adding or editing a task
+const TaskForm = ({ onAdd, onUpdate, editingTask, setTitle, setDescription, title, description, cancelEdit }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim() || !description.trim()) return;
-    onAdd({ title: title.trim(), description: description.trim() });
-    setTitle('');
-    setDescription('');
+    if (editingTask) {
+      onUpdate(editingTask.id, { title: title.trim(), description: description.trim() });
+    } else {
+      onAdd({ title: title.trim(), description: description.trim() });
+    }
   };
+
+  useEffect(() => {
+    if (editingTask) {
+      setTitle(editingTask.title);
+      setDescription(editingTask.description);
+    }
+  }, [editingTask, setTitle, setDescription]);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
@@ -30,12 +36,23 @@ const TaskForm = ({ onAdd }) => {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      <button
-        type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition-colors font-semibold shadow"
-      >
-        Add
-      </button>
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition-colors font-semibold shadow"
+        >
+          {editingTask ? 'Update' : 'Add'}
+        </button>
+        {editingTask && (
+          <button
+            type="button"
+            className="w-full bg-gray-400 hover:bg-gray-500 text-white py-2 rounded transition-colors font-semibold shadow"
+            onClick={cancelEdit}
+          >
+            Cancel
+          </button>
+        )}
+      </div>
     </form>
   );
 };
@@ -163,6 +180,9 @@ const TaskList = ({ tasks, currentTab, onComplete, onEdit, onDelete, onRestore, 
 const Home = () => {
   const [tasks, setTasks] = useState([]);
   const [currentTab, setCurrentTab] = useState('active');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [editingTask, setEditingTask] = useState(null);
 
   // Load tasks from database
   const loadTasks = () => {
@@ -177,21 +197,35 @@ const Home = () => {
 
   const handleAddTask = async ({ title, description }) => {
     try {
-      const res = await axios.post('http://localhost:5000/tasks', {
+      await axios.post('http://localhost:5000/tasks', {
         title,
         description,
         status: 'active'
       });
-      loadTasks(); // Reload all tasks to get updated list
+      setTitle('');
+      setDescription('');
+      loadTasks();
     } catch (err) {
       console.error('Failed to add task:', err);
+    }
+  };
+
+  const handleUpdateTask = async (id, { title, description }) => {
+    try {
+      await axios.put(`http://localhost:5000/tasks/${id}`, { title, description });
+      setTitle('');
+      setDescription('');
+      setEditingTask(null);
+      loadTasks();
+    } catch (err) {
+      console.error('Failed to update task:', err);
     }
   };
 
   const handleCompleteTask = async (id, newStatus = 'completed') => {
     try {
       await axios.put(`http://localhost:5000/tasks/${id}/status`, { status: newStatus });
-      loadTasks(); // Reload all tasks
+      loadTasks();
     } catch (err) {
       console.error('Failed to update task:', err);
     }
@@ -200,7 +234,7 @@ const Home = () => {
   const handleDeleteTask = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/tasks/${id}`);
-      loadTasks(); // Reload all tasks
+      loadTasks();
     } catch (err) {
       console.error('Failed to delete task:', err);
     }
@@ -209,7 +243,7 @@ const Home = () => {
   const handleRestoreTask = async (id) => {
     try {
       await axios.put(`http://localhost:5000/tasks/${id}/restore`);
-      loadTasks(); // Reload all tasks
+      loadTasks();
     } catch (err) {
       console.error('Failed to restore task:', err);
     }
@@ -218,22 +252,38 @@ const Home = () => {
   const handlePermanentDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/tasks/${id}/permanent`);
-      loadTasks(); // Reload all tasks
+      loadTasks();
     } catch (err) {
       console.error('Failed to permanently delete task:', err);
     }
   };
 
   const handleEditTask = (id) => {
-    alert('Edit functionality coming soon!');
+    const task = tasks.find(t => t.id === id);
+    setEditingTask(task);
+  };
+
+  const cancelEdit = () => {
+    setEditingTask(null);
+    setTitle('');
+    setDescription('');
   };
 
   return (
     <div className="bg-gray-100 min-h-screen min-w-screen w-screen h-screen flex items-center justify-center overflow-auto">
       <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full flex flex-col md:flex-row p-4 md:p-8 my-4 md:my-12 mx-2 md:mx-4 h-auto md:h-[600px] items-center">
-        {/* Left: Add Task */}
+        {/* Left: Add/Edit Task */}
         <div className="w-full md:w-1/2 flex flex-col justify-center items-center md:pr-8 border-b md:border-b-0 md:border-r border-gray-200 h-auto md:h-full mb-4 md:mb-0">
-          <TaskForm onAdd={handleAddTask} />
+          <TaskForm
+            onAdd={handleAddTask}
+            onUpdate={handleUpdateTask}
+            editingTask={editingTask}
+            setTitle={setTitle}
+            setDescription={setDescription}
+            title={title}
+            description={description}
+            cancelEdit={cancelEdit}
+          />
         </div>
         {/* Right: Task List */}
         <div className="w-full md:w-1/2 flex flex-col justify-center items-center md:pl-8 h-auto md:h-full">
