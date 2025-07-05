@@ -2,6 +2,11 @@ class ErrorHandler {
   static handleError(err, req, res, next) {
     console.error('Error:', err);
 
+    // Handle null/undefined errors
+    if (!err) {
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
     if (err.type === 'entity.parse.failed') {
       return res.status(400).json({ error: 'Invalid JSON format' });
     }
