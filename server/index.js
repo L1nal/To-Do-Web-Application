@@ -1,141 +1,104 @@
+// Entry point for the server application. Sets up Express, database, routes, and error handling.
 const express = require('express');
 const cors = require('cors');
-const app = express();
-const mysql = require('mysql2');
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'admin',
-    database: 'todo_app'
-});
+// Import modules
+const DatabaseConfig = require('./config/database');
+const TaskRepository = require('./repositories/TaskRepository');
+const TaskService = require('./services/TaskService');
+const TaskController = require('./controllers/TaskController');
+const TaskRoutes = require('./routes/taskRoutes');
+const ErrorHandler = require('./middleware/errorHandler');
 
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to MySQL:', err.message);
-    } else {
-        console.log('Connected to MySQL database!');
+/**
+ * Main application class for setting up and starting the server
+ */
+class App {
+  constructor() {
+    this.app = express();
+    this.port = 5000;
+  }
+
+  /**
+   * Set up middleware for CORS and JSON parsing
+   */
+  setupMiddleware() {
+    this.app.use(cors());
+    this.app.use(express.json());
+  }
+
+  /**
+   * Set up the database connection and initialize dependencies
+   */
+  async setupDatabase() {
+    try {
+      const dbConfig = new DatabaseConfig();
+      this.connection = dbConfig.createConnection();
+      await dbConfig.connect(this.connection);
+      
+      // Initialize repository, service, and controller with the DB connection
+      this.taskRepository = new TaskRepository(this.connection);
+      this.taskService = new TaskService(this.taskRepository);
+      this.taskController = new TaskController(this.taskService);
+      
+      console.log('Database and dependencies initialized successfully');
+    } catch (error) {
+      console.error('Failed to setup database:', error);
+      process.exit(1);
     }
-});
+  }
 
-app.use(cors());
-app.use(express.json());
+  /**
+   * Register all API routes
+   */
+  setupRoutes() {
+    const taskRoutes = new TaskRoutes(this.taskController);
+    this.app.use('/', taskRoutes.getRouter());
+  }
 
-// Get all tasks from database
-app.get('/tasks', (req, res) => {
-  const query = 'SELECT * FROM tasks ORDER BY created_at DESC';
-  connection.query(query, (err, results) => {
-    if (err) {
-      console.error('Error fetching tasks:', err);
-      res.status(500).json({ error: 'Failed to fetch tasks' });
-    } else {
-      res.json(results);
+  /**
+   * Set up error handling middleware
+   */
+  setupErrorHandling() {
+    this.app.use(ErrorHandler.notFound);
+    this.app.use(ErrorHandler.handleError);
+  }
+
+  /**
+   * Initialize the application (middleware, DB, routes, error handling)
+   */
+  async initialize() {
+    try {
+      this.setupMiddleware();
+      await this.setupDatabase();
+      this.setupRoutes();
+      this.setupErrorHandling();
+    } catch (error) {
+      console.error('Failed to initialize application:', error);
+      process.exit(1);
     }
-  });
-});
+  }
 
-// Add new task to database
-app.post('/tasks', (req, res) => {
-  const { title, description, status = 'active' } = req.body;
-  const query = 'INSERT INTO tasks (title, description, status) VALUES (?, ?, ?)';
-  
-  connection.query(query, [title, description, status], (err, result) => {
-    if (err) {
-      console.error('Error adding task:', err);
-      res.status(500).json({ error: 'Failed to add task' });
-    } else {
-      // Get the newly created task
-      const newTaskId = result.insertId;
-      const getTaskQuery = 'SELECT * FROM tasks WHERE id = ?';
-      connection.query(getTaskQuery, [newTaskId], (err, results) => {
-        if (err) {
-          res.status(201).json({ id: newTaskId, title, description, status });
-        } else {
-          res.status(201).json(results[0]);
-        }
-      });
-    }
-  });
-});
+  /**
+   * Start the Express server
+   */
+  start() {
+    this.app.listen(this.port, () => {
+      console.log(`Server is running on port ${this.port}`);
+    });
+  }
+}
 
-// Update task status (complete task)
-app.put('/tasks/:id/status', (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
-  
-  const query = 'UPDATE tasks SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?';
-  connection.query(query, [status, id], (err, result) => {
-    if (err) {
-      console.error('Error updating task:', err);
-      res.status(500).json({ error: 'Failed to update task' });
-    } else {
-      res.json({ message: 'Task updated successfully' });
-    }
-  });
-});
+// Start the application
+const startApp = async () => {
+  const app = new App();
+  await app.initialize();
+  app.start();
+};
 
-// Soft delete task (mark as deleted)
-app.delete('/tasks/:id', (req, res) => {
-  const { id } = req.params;
-  
-  const query = 'UPDATE tasks SET status = "deleted", deleted_at = CURRENT_TIMESTAMP WHERE id = ?';
-  connection.query(query, [id], (err, result) => {
-    if (err) {
-      console.error('Error deleting task:', err);
-      res.status(500).json({ error: 'Failed to delete task' });
-    } else {
-      res.json({ message: 'Task deleted successfully' });
-    }
-  });
-});
-
-// Restore deleted task
-app.put('/tasks/:id/restore', (req, res) => {
-  const { id } = req.params;
-  
-  const query = 'UPDATE tasks SET status = "active", deleted_at = NULL WHERE id = ?';
-  connection.query(query, [id], (err, result) => {
-    if (err) {
-      console.error('Error restoring task:', err);
-      res.status(500).json({ error: 'Failed to restore task' });
-    } else {
-      res.json({ message: 'Task restored successfully' });
-    }
-  });
-});
-
-// Hard delete task (permanently remove)
-app.delete('/tasks/:id/permanent', (req, res) => {
-  const { id } = req.params;
-  
-  const query = 'DELETE FROM tasks WHERE id = ?';
-  connection.query(query, [id], (err, result) => {
-    if (err) {
-      console.error('Error permanently deleting task:', err);
-      res.status(500).json({ error: 'Failed to delete task' });
-    } else {
-      res.json({ message: 'Task permanently deleted' });
-    }
-  });
-});
-
-// Update task title and description
-app.put('/tasks/:id', (req, res) => {
-  const { id } = req.params;
-  const { title, description } = req.body;
-  const query = 'UPDATE tasks SET title = ?, description = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?';
-  connection.query(query, [title, description, id], (err, result) => {
-    if (err) {
-      console.error('Error updating task:', err);
-      res.status(500).json({ error: 'Failed to update task' });
-    } else {
-      res.json({ message: 'Task updated successfully' });
-    }
-  });
-});
-
-app.listen(5000, () => {
-    console.log('Server is running on port 5000');
+startApp().catch(error => {
+  console.error('Failed to start application:', error);
+  process.exit(1);
 });
 
 
