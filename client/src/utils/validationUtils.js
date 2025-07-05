@@ -3,19 +3,23 @@ import { VALIDATION_LIMITS } from '../constants/taskConstants';
 export const validateTaskData = (taskData) => {
   const errors = [];
 
-  if (!taskData.title || !taskData.title.trim()) {
+  // Coerce to string if not null/undefined, else empty string
+  const title = taskData.title == null ? '' : String(taskData.title);
+  const description = taskData.description == null ? '' : String(taskData.description);
+
+  if (!title.trim()) {
     errors.push('Title is required');
   }
 
-  if (!taskData.description || !taskData.description.trim()) {
+  if (!description.trim()) {
     errors.push('Description is required');
   }
 
-  if (taskData.title && taskData.title.trim().length > VALIDATION_LIMITS.TITLE_MAX_LENGTH) {
+  if (title.trim().length > VALIDATION_LIMITS.TITLE_MAX_LENGTH) {
     errors.push(`Title is too long (max ${VALIDATION_LIMITS.TITLE_MAX_LENGTH} characters)`);
   }
 
-  if (taskData.description && taskData.description.trim().length > VALIDATION_LIMITS.DESCRIPTION_MAX_LENGTH) {
+  if (description.trim().length > VALIDATION_LIMITS.DESCRIPTION_MAX_LENGTH) {
     errors.push(`Description is too long (max ${VALIDATION_LIMITS.DESCRIPTION_MAX_LENGTH} characters)`);
   }
 
