@@ -21,7 +21,7 @@ class DatabaseConfig {
           console.error('Error connecting to MySQL:', err.message);
           reject(err);
         } else {
-          console.log('Connected to MySQL database!');
+          console.log('Connected to MySQL database');
           resolve();
         }
       });

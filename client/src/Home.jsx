@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
 import TabNavigation from './components/TabNavigation';
+import Notification from './components/Notification';
 import useTaskManager from './hooks/useTaskManager';
 import useTaskForm from './hooks/useTaskForm';
 
@@ -37,6 +38,18 @@ const Home = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen min-w-screen w-screen h-screen flex items-center justify-center overflow-auto">
+      {/* Notification Component */}
+      <Notification 
+        message={taskManager.success} 
+        type={taskManager.notificationType} 
+        onClose={() => taskManager.clearMessages()} 
+      />
+      <Notification 
+        message={taskManager.error} 
+        type="error" 
+        onClose={() => taskManager.clearMessages()} 
+      />
+      
       <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full flex flex-col md:flex-row p-4 md:p-8 my-4 md:my-12 mx-2 md:mx-4 h-auto md:h-[600px] items-center">
         <div className="w-full md:w-1/2 flex flex-col justify-center items-center md:pr-8 border-b md:border-b-0 md:border-r border-blue-600 h-auto md:h-full mb-4 md:mb-0">
           <div className="w-full">
@@ -61,6 +74,7 @@ const Home = () => {
             <TaskList
               tasks={taskManager.tasks}
               currentTab={currentTab}
+              loading={taskManager.loading}
               onComplete={taskManager.completeTask}
               onEdit={handleEditTask}
               onDelete={taskManager.deleteTask}

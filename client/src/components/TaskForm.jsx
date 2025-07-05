@@ -38,7 +38,6 @@ const TaskForm = ({
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
       <h2 className="text-blue-600 font-bold text-3xl mb-4 text-center">Add a Task</h2>
       
-      {/* Error Messages */}
       {errors.length > 0 && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           <ul className="list-disc list-inside">

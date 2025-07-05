@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import TaskItem from './TaskItem';
+import LoadingSpinner from './LoadingSpinner';
 import { TASK_STATUSES } from '../constants/taskConstants';
 
-const TaskList = ({ tasks, currentTab, onComplete, onEdit, onDelete, onRestore, onPermanentDelete }) => {
+const TaskList = ({ tasks, currentTab, loading, onComplete, onEdit, onDelete, onRestore, onPermanentDelete }) => {
   const [showAll, setShowAll] = useState(false);
   
   const filterTasksByStatus = (tasks, status) => {
@@ -24,6 +25,14 @@ const TaskList = ({ tasks, currentTab, onComplete, onEdit, onDelete, onRestore, 
 
   const filteredTasks = getFilteredTasks();
   const visibleTasks = showAll ? filteredTasks : filteredTasks.slice(0, 5);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col w-full items-center justify-center py-8">
+        <LoadingSpinner size="lg" text="Loading tasks..." />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full">

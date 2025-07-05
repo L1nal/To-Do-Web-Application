@@ -5,6 +5,8 @@ const useTaskManager = (taskService = new TaskService()) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [notificationType, setNotificationType] = useState('success');
 
   const loadTasks = async () => {
     setLoading(true);
@@ -21,8 +23,12 @@ const useTaskManager = (taskService = new TaskService()) => {
 
   const addTask = async (taskData) => {
     try {
-      await taskService.createTask(taskData);
+      const response = await taskService.createTask(taskData);
+      setSuccess(response.message || 'Task created successfully');
+      setNotificationType('success');
       await loadTasks();
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError(err.message);
       throw err;
@@ -31,8 +37,11 @@ const useTaskManager = (taskService = new TaskService()) => {
 
   const updateTask = async (id, taskData) => {
     try {
-      await taskService.updateTask(id, taskData);
+      const response = await taskService.updateTask(id, taskData);
+      setSuccess(response.message || 'Task updated successfully');
+      setNotificationType('success');
       await loadTasks();
+      setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError(err.message);
       throw err;
@@ -41,8 +50,11 @@ const useTaskManager = (taskService = new TaskService()) => {
 
   const completeTask = async (id, newStatus = 'completed') => {
     try {
-      await taskService.updateTaskStatus(id, newStatus);
+      const response = await taskService.updateTaskStatus(id, newStatus);
+      setSuccess(response.message || 'Task status updated successfully');
+      setNotificationType('success');
       await loadTasks();
+      setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError(err.message);
       throw err;
@@ -51,8 +63,11 @@ const useTaskManager = (taskService = new TaskService()) => {
 
   const deleteTask = async (id) => {
     try {
-      await taskService.deleteTask(id);
+      const response = await taskService.deleteTask(id);
+      setSuccess(response.message || 'Task deleted successfully');
+      setNotificationType('error'); // Red notification for delete operations
       await loadTasks();
+      setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError(err.message);
       throw err;
@@ -61,8 +76,11 @@ const useTaskManager = (taskService = new TaskService()) => {
 
   const restoreTask = async (id) => {
     try {
-      await taskService.restoreTask(id);
+      const response = await taskService.restoreTask(id);
+      setSuccess(response.message || 'Task restored successfully');
+      setNotificationType('success');
       await loadTasks();
+      setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError(err.message);
       throw err;
@@ -71,12 +89,20 @@ const useTaskManager = (taskService = new TaskService()) => {
 
   const permanentDeleteTask = async (id) => {
     try {
-      await taskService.permanentDeleteTask(id);
+      const response = await taskService.permanentDeleteTask(id);
+      setSuccess(response.message || 'Task permanently deleted');
+      setNotificationType('error'); // Red notification for permanent delete operations
       await loadTasks();
+      setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError(err.message);
       throw err;
     }
+  };
+
+  const clearMessages = () => {
+    setError(null);
+    setSuccess(null);
   };
 
   useEffect(() => {
@@ -87,13 +113,16 @@ const useTaskManager = (taskService = new TaskService()) => {
     tasks,
     loading,
     error,
+    success,
+    notificationType,
+    clearMessages,
+    loadTasks,
     addTask,
     updateTask,
     completeTask,
     deleteTask,
     restoreTask,
-    permanentDeleteTask,
-    loadTasks
+    permanentDeleteTask
   };
 };
 
