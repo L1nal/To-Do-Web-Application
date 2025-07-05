@@ -23,5 +23,5 @@ RUN chmod +x /wait-for-it.sh
 # Expose port 5000
 EXPOSE 5000
 
-# Start the application with wait-for-it (20 second timeout for optimal balance)
-CMD ["/wait-for-it.sh", "db:3306", "--timeout=20", "--strict", "--", "node", "index.js"] 
+# Start the application with wait-for-it (60 second timeout for maximum compatibility)
+CMD ["/wait-for-it.sh", "db:3306", "--timeout=60", "--strict", "--", "node", "index.js"] 
