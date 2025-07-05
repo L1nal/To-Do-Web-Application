@@ -17,7 +17,7 @@ export const TAB_LABELS = {
 };
 
 export const API_ENDPOINTS = {
-  BASE_URL: 'http://localhost:5000',
+  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
   TASKS: '/tasks',
   TASK_STATUS: (id) => `/tasks/${id}/status`,
   TASK_RESTORE: (id) => `/tasks/${id}/restore`,
