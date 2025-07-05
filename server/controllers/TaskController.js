@@ -14,7 +14,7 @@ class TaskController {
       res.json(tasks);
     } catch (error) {
       console.error('Error fetching tasks:', error);
-      res.status(500).json({ error: error.message });
+      res.status(400).json({ error: error.message });
     }
   }
 
