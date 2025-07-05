@@ -1,8 +1,16 @@
+// TaskService contains business logic for managing tasks
 class TaskService {
+  /**
+   * @param {TaskRepository} taskRepository - Repository for database operations
+   */
   constructor(taskRepository) {
     this.taskRepository = taskRepository;
   }
 
+  /**
+   * Retrieve all tasks from the database
+   * @returns {Promise<Array>} List of tasks
+   */
   async getAllTasks() {
     try {
       return await this.taskRepository.findAll();
@@ -11,6 +19,11 @@ class TaskService {
     }
   }
 
+  /**
+   * Retrieve a single task by its ID
+   * @param {number} id - Task ID
+   * @returns {Promise<Object>} Task object
+   */
   async getTaskById(id) {
     try {
       const task = await this.taskRepository.findById(id);
@@ -23,6 +36,11 @@ class TaskService {
     }
   }
 
+  /**
+   * Create a new task
+   * @param {Object} taskData - Task data (title, description, etc.)
+   * @returns {Promise<Object>} Newly created task
+   */
   async createTask(taskData) {
     try {
       const taskId = await this.taskRepository.create(taskData);
@@ -32,6 +50,12 @@ class TaskService {
     }
   }
 
+  /**
+   * Update an existing task
+   * @param {number} id - Task ID
+   * @param {Object} taskData - Updated task data
+   * @returns {Promise<Object>} Success message
+   */
   async updateTask(id, taskData) {
     try {
       await this.taskRepository.update(id, taskData);
@@ -41,6 +65,12 @@ class TaskService {
     }
   }
 
+  /**
+   * Update the status of a task (e.g., complete, delete)
+   * @param {number} id - Task ID
+   * @param {string} status - New status
+   * @returns {Promise<Object>} Success message
+   */
   async updateTaskStatus(id, status) {
     try {
       await this.taskRepository.updateStatus(id, status);
@@ -50,6 +80,11 @@ class TaskService {
     }
   }
 
+  /**
+   * Soft delete a task (mark as deleted)
+   * @param {number} id - Task ID
+   * @returns {Promise<Object>} Success message
+   */
   async deleteTask(id) {
     try {
       await this.taskRepository.softDelete(id);
@@ -59,6 +94,11 @@ class TaskService {
     }
   }
 
+  /**
+   * Restore a soft-deleted task
+   * @param {number} id - Task ID
+   * @returns {Promise<Object>} Success message
+   */
   async restoreTask(id) {
     try {
       await this.taskRepository.restore(id);
@@ -68,6 +108,11 @@ class TaskService {
     }
   }
 
+  /**
+   * Permanently delete a task from the database
+   * @param {number} id - Task ID
+   * @returns {Promise<Object>} Success message
+   */
   async permanentDeleteTask(id) {
     try {
       await this.taskRepository.permanentDelete(id);

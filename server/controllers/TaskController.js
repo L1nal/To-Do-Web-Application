@@ -1,8 +1,13 @@
+// Controller for handling task-related HTTP requests
 class TaskController {
   constructor(taskService) {
     this.taskService = taskService;
   }
 
+  /**
+   * Get all tasks
+   * Route: GET /tasks
+   */
   async getAllTasks(req, res) {
     try {
       const tasks = await this.taskService.getAllTasks();
@@ -13,6 +18,10 @@ class TaskController {
     }
   }
 
+  /**
+   * Create a new task
+   * Route: POST /tasks
+   */
   async createTask(req, res) {
     try {
       const taskData = req.body;
@@ -24,6 +33,10 @@ class TaskController {
     }
   }
 
+  /**
+   * Update an existing task
+   * Route: PUT /tasks/:id
+   */
   async updateTask(req, res) {
     try {
       const { id } = req.params;
@@ -36,6 +49,10 @@ class TaskController {
     }
   }
 
+  /**
+   * Update the status of a task (e.g., complete, delete)
+   * Route: PUT /tasks/:id/status
+   */
   async updateTaskStatus(req, res) {
     try {
       const { id } = req.params;
@@ -48,6 +65,10 @@ class TaskController {
     }
   }
 
+  /**
+   * Soft delete a task (mark as deleted)
+   * Route: DELETE /tasks/:id
+   */
   async deleteTask(req, res) {
     try {
       const { id } = req.params;
@@ -59,6 +80,10 @@ class TaskController {
     }
   }
 
+  /**
+   * Restore a soft-deleted task
+   * Route: PUT /tasks/:id/restore
+   */
   async restoreTask(req, res) {
     try {
       const { id } = req.params;
@@ -70,6 +95,10 @@ class TaskController {
     }
   }
 
+  /**
+   * Permanently delete a task from the database
+   * Route: DELETE /tasks/:id/permanent
+   */
   async permanentDeleteTask(req, res) {
     try {
       const { id } = req.params;
