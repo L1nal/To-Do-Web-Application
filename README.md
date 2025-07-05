@@ -22,8 +22,20 @@ cd Linal_Assesment
 docker-compose up --build
 ```
 
-- The app will be available at: [http://localhost](http://localhost)
-- Backend API: [http://localhost:5000](http://localhost:5000)
+### Wait for Application to Start
+
+Wait until you see this message in the console:
+```
+Application is now fully operational!
+Visit the app on : http://localhost
+```
+
+This indicates that all services are running and the application is ready to use.
+
+### Accessing the Application
+
+- **Frontend:** [http://localhost](http://localhost)
+- **Backend API:** [http://localhost:5000](http://localhost:5000)
 
 ### Stopping the App
 

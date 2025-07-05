@@ -13,7 +13,7 @@ RUN npm ci --only=production
 # Copy source code
 COPY . .
 
-# Add bash for wait-for-it
+# Add bash and wait-for-it
 RUN apk add --no-cache bash
 
 # Add wait-for-it script
@@ -23,5 +23,5 @@ RUN chmod +x /wait-for-it.sh
 # Expose port 5000
 EXPOSE 5000
 
-# Start the application
-CMD ["/wait-for-it.sh", "db:3306", "--", "node", "index.js"] 
+# Start the application with wait-for-it (60 second timeout for maximum compatibility)
+CMD ["/wait-for-it.sh", "db:3306", "--timeout=60", "--strict", "--", "node", "index.js"] 

@@ -14,18 +14,30 @@ class DatabaseConfig {
     return mysql.createConnection(this.config);
   }
 
-  connect(connection) {
-    return new Promise((resolve, reject) => {
-      connection.connect((err) => {
-        if (err) {
-          console.error('Error connecting to MySQL:', err.message);
-          reject(err);
-        } else {
-          console.log('Connected to MySQL database');
-          resolve();
+  async connect(connection, maxRetries = 5, retryDelay = 2000) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        await new Promise((resolve, reject) => {
+          connection.connect((err) => {
+            if (err) {
+              console.error(`Connection attempt ${attempt} failed:`, err.message);
+              reject(err);
+            } else {
+              console.log('Connected to MySQL database');
+              resolve();
+            }
+          });
+        });
+        return; 
+      } catch (error) {
+        if (attempt === maxRetries) {
+          console.error(`Failed to connect after ${maxRetries} attempts:`, error.message);
+          throw error;
         }
-      });
-    });
+        console.log(`Connection attempt ${attempt} failed, retrying in ${retryDelay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+      }
+    }
   }
 }
 
