@@ -26,13 +26,13 @@ const TaskForm = ({ onAdd, onUpdate, editingTask, setTitle, setDescription, titl
       <input
         type="text"
         placeholder="Title"
-        className="w-full p-2 border border-gray-300 rounded focus:outline-none"
+        className="w-full p-2 border border-blue-500 rounded focus:outline-none focus:border-blue-700 bg-gray-200"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
       <textarea
         placeholder="Description"
-        className="w-full p-2 border border-gray-300 rounded focus:outline-none resize-none h-28"
+        className="w-full p-2 border border-blue-500 rounded focus:outline-none focus:border-blue-700 bg-gray-200 resize-none h-28"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
@@ -273,17 +273,19 @@ const Home = () => {
     <div className="bg-gray-100 min-h-screen min-w-screen w-screen h-screen flex items-center justify-center overflow-auto">
       <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full flex flex-col md:flex-row p-4 md:p-8 my-4 md:my-12 mx-2 md:mx-4 h-auto md:h-[600px] items-center">
         {/* Left: Add/Edit Task */}
-        <div className="w-full md:w-1/2 flex flex-col justify-center items-center md:pr-8 border-b md:border-b-0 md:border-r border-gray-200 h-auto md:h-full mb-4 md:mb-0">
-          <TaskForm
-            onAdd={handleAddTask}
-            onUpdate={handleUpdateTask}
-            editingTask={editingTask}
-            setTitle={setTitle}
-            setDescription={setDescription}
-            title={title}
-            description={description}
-            cancelEdit={cancelEdit}
-          />
+        <div className="w-full md:w-1/2 flex flex-col justify-center items-center md:pr-8 border-b md:border-b-0 md:border-r border-blue-600 h-auto md:h-full mb-4 md:mb-0">
+          <div className="w-full">
+            <TaskForm
+              onAdd={handleAddTask}
+              onUpdate={handleUpdateTask}
+              editingTask={editingTask}
+              setTitle={setTitle}
+              setDescription={setDescription}
+              title={title}
+              description={description}
+              cancelEdit={cancelEdit}
+            />
+          </div>
         </div>
         {/* Right: Task List */}
         <div className="w-full md:w-1/2 flex flex-col justify-center items-center md:pl-8 h-auto md:h-full">
@@ -328,7 +330,7 @@ const Home = () => {
         </div>
       </div>
       {/* Footer */}
-      <footer className="w-full fixed bottom-0 left-0 text-center text-xs text-gray-400 bg-white bg-opacity-80 py-2 z-50">
+      <footer className="w-full fixed bottom-0 left-0 text-center text-xs text-gray-400 py-2 z-50">
         This project was developed by Linal Mathila as part of the Full Stack Software Engineer interview process for CoverageX LLC.
       </footer>
     </div>
