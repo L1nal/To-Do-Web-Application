@@ -85,6 +85,9 @@ class App {
   start() {
     this.app.listen(this.port, () => {
       console.log(`Server is running on port ${this.port}`);
+      console.log('Backend API is ready and accepting requests');
+      console.log('Application is now fully operational!');
+      console.log('Visit the app on : http://localhost');
     });
   }
 }
