@@ -1,6 +1,13 @@
-# Linal Assessment - Full Stack Todo App.
+# Full Stack Todo App.
 
 A full-stack Todo application built with React (frontend), Node.js/Express (backend), and MySQL, fully containerized using Docker and Docker Compose.
+
+## Product Screenshots
+
+Here are some previews of the application:
+
+![Todo App Screenshot](Images/image1.png)
+
 
 ## Tech Stack
 
