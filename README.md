@@ -6,8 +6,10 @@ A full-stack Todo application built with React (frontend), Node.js/Express (back
 
 Here are some previews of the application:
 
-![Todo App Screenshot](Images/image1.png)
-
+![Todo App Screenshot](Images/Image1.png)
+![Todo App Screenshot](Images/Image2.png)
+![Todo App Screenshot](Images/Image3.png)
+![Todo App Screenshot](Images/Image4.png)
 
 ## Tech Stack
 
